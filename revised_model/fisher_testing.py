@@ -276,14 +276,14 @@ for model_type in ("neutral", "conformity", "directional"):
                 for key in counts:
                     for i in np.repeat(key, counts[key]):
                         counts_sample_format[-1][1].append(int(i))
-                counts_sample_format[-1] = collapse_spectrum(
-                    counts_sample_format[-1], "counts", sum(sampling_freq))
+                counts_sample_format[-1][1] = collapse_spectrum(
+                    counts_sample_format[-1][1], "counts", sum(sampling_freq))
 
                 for key in lifetimes:
                     for i in np.repeat(key, lifetimes[key]):
                         lifetimes_sample_format[-1][1].append(int(i))
-                lifetimes_sample_format[-1] = collapse_spectrum(
-                    lifetimes_sample_format[-1], "lifetimes")
+                lifetimes_sample_format[-1][1] = collapse_spectrum(
+                    lifetimes_sample_format[-1][1], "lifetimes")
 
                 count_dict[f"{model_type}_{error}err_{dispersal_rate}dispRate_{area_name}"] = counts
                 counts = collapse_spectrum(counts, "counts", sum(sampling_freq))
