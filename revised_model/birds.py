@@ -97,9 +97,10 @@ class BirdModel:
             if self.model_type == 'conformity':  # prefer common syllables
                 nearby_uniques, nearby_counts = np.unique(neighbor_sylls,
                                                           return_counts=True)
-                scaled_counts = (nearby_counts ** self.conformity_factor).astype(int)
+                syll_conformity = (nearby_counts ** self.conformity_factor)
+                syll_conformity /= np.sum(syll_conformity)
                 new_syllables.append(
-                    np.random.choice(np.repeat(nearby_uniques, scaled_counts)))
+                    np.random.choice(nearby_uniques, p = syll_conformity))
 
             if self.model_type == 'directional':  # based on highest syllable trill rate
                 neighbor_rates = self.rate_matrix[row_0:row_1, col_0:col_1].flatten().tolist()
