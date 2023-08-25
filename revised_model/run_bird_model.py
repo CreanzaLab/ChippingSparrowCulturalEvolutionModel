@@ -24,9 +24,10 @@ parser.add_argument('-t', '--total_generations', type=int, default=1000,
 parser.add_argument('--high_syll', type=str, default="constant",
                     help="How the initial number of syllables are calculated. Default is 'constant' "\
                          "which is set to 500. Otherwise, it is 'adaptive' which is set to (dim^2)/500.")
+parser.add_argument('--homoplasy', 'homoplasy', action='store_true')
+parser.set_defaults(homoplasy=False)
 
 args = parser.parse_args()
-
 
 """
 Cultural Transmission Model
@@ -57,6 +58,8 @@ file_name = args.model_type + '_' \
             + str(args.dispersal_rate) + 'dispRate'
 if args.simulation_number > 0:
     file_name = file_name + 'sim' + str(args.simulation_number)
+if args.homoplasy:
+    file_name = file_name + '_hp'
 
 currently_running = -1
 for proc in psutil.process_iter():
@@ -74,6 +77,7 @@ if not (os.path.exists(f"{out_dir}/{file_name}.history.pickle.xz") or currently_
                   args.dispersal_rate,
                   args.error_rate / 100,
                   dim=args.dim,
+                  homoplasy=args.homoplasy,
                   logfile=f"{out_dir}/{file_name}.log",
                   total_generations=args.total_generations)
     
