@@ -10,6 +10,7 @@ class BirdModel:
                  dispersal_dist=11, dim=500,
                  min_type=0, max_type=500,
                  min_rate=5, max_rate=40,
+                 homoplasy=False,
                  mortality=0.4,
                  logfile=None,
                  total_generations=1000,
@@ -41,7 +42,8 @@ class BirdModel:
         self.conformity_factor = conformity_factor
         self.dispersal_rate = dispersal_rate
         self.dispersal_dist = dispersal_dist
-        self.logfile=logfile
+        self.homoplasy = homoplasy
+        self.logfile = logfile
         self.total_generations = total_generations
         self.generations_for_burnin = total_generations - sampled_generations
         self.sampled_generations = sampled_generations
@@ -71,10 +73,17 @@ class BirdModel:
             col_1 = min(self.dim, y + distance + 1)
 
             if np.random.rand() < self.error_rate:
-                # make a new syllable (error)
-                max_syllable += 1
-                new_syllables.append(max_syllable)
+                # what happens during learning errors
+                if self.homoplasy:
+                    # sample a syllable from the syllable space
+                    new_syllables.append(np.random.randint(min_type, max_type))
+                else:
+                    # make a new syllable (error)
+                    max_syllable += 1
+                    new_syllables.append(max_syllable)
+                    
                 if self.model_type == 'directional':
+                    # Add error to the bird's song rate
                     neighbor_rates = self.rate_matrix[row_0:row_1, col_0:col_1].flatten().tolist()
                     neighbor_rates.remove(self.rate_matrix[x, y])
                     rate = max(neighbor_rates) + np.random.uniform(-2, 0.25)
@@ -82,7 +91,7 @@ class BirdModel:
                     rate = min(rate, 40)
                     new_rates.append(rate)
 
-                continue
+                continue  # for this error, don't calculate syllable neighbors, etc.
 
             # if not making a new syllable, choose a syllable from among the choices
             # start by getting syllables from the adjacent territories
